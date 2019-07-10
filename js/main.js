@@ -1,29 +1,50 @@
-const url = 'https://cors-anywhere.herokuapp.com/https://www.ssa.group/';
-$.ajax({
-	url,
-	type: 'GET',
-	beforeSend: () => {
-		$('#loader').show();
-	},
-	success: res => {
-		$('#main').append('<nav id="nav"></nav>');
-		$('#nav').append('<a class="opener" href="#"></a>');
-		$('a.opener').append('<span></span>');
-		$('#nav').append('<div id="drop"</div>');
-		$('#drop').append('<ul class="menu-items"></ul>');
-		$(res).find('li.top-level > a').each((index, a) => {
-			const elem = $('<li class="menu-item"></li>').append(a);
-			$('ul.menu-items').append(elem);
-		});
-		$('#drop').hide();
-		$("a.opener").click(() => {
-			$("#drop").toggle( "slow" );
-		});
-	},
-	error: () => {
-		$('#main').append('<p class="error">Can not get data!</p>')
-	},
-	complete: () => {
-		$('#loader').hide();
-	}
-})
+$( document ).ready(function() {
+	var main = $('#main');
+	var nav = $('<nav id="nav"></nav>');
+	var menu = $('<ul class="menu-items"></ul>');
+	var drop = $('<div id="drop"</div>');
+	var opener = $('<a class="opener" href="#"></a>');
+	var loader = $('#loader');
+
+	main
+	.append(
+		nav
+		.append(
+			opener
+			.append(
+				$('<span></span>')
+			)
+		)
+		.append(
+			drop
+			.append(
+				menu
+			)
+		)
+	);
+
+	drop.hide();
+	opener.click(() => {
+		drop.toggle( "slow" );
+	});
+
+	$.ajax({
+		url: 'https://cors-anywhere.herokuapp.com/https://www.ssa.group/',
+		type: 'GET',
+		beforeSend: () => {
+			loader.show();
+		},
+		success: res => {
+			$(res).find('li.top-level > a').each((index, a) => {
+				const elem = $('<li class="menu-item"></li>').append(a);
+				menu.append(elem);
+			});
+		},
+		error: () => {
+			main.append('<p class="error">Can not get data!</p>')
+		},
+		complete: () => {
+			loader.hide();
+		}
+	});
+});
